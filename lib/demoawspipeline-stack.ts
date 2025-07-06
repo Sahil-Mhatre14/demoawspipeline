@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
+import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep } from 'aws-cdk-lib/pipelines';
+import { PipelineAppStage } from './demoawspipeline-app-stack';
+import { ManualApprovalAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 
 export class DemoawspipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -12,9 +14,19 @@ export class DemoawspipelineStack extends cdk.Stack {
     const democicdpipeline = new CodePipeline(this, 'demopipeline14', {
       pipelineName: 'DemoPipeline',
       synth: new ShellStep('Synth', {
-        input: CodePipelineSource.gitHub('Sahil-Mhatre14/demoawspipeline', 'main'),
+        input: CodePipelineSource.gitHub('Sahil-Mhatre14/demoawspipeline', 'master'),
         commands: ["npm ci", "npm run build", "npx cdk synth"]
       })
     });
+
+    const testingStage = democicdpipeline.addStage(new PipelineAppStage(this, 'test', {
+      env: { account: '489493636977', region: 'us-west-1' }
+    }));
+
+    testingStage.addPost(new ManualApprovalStep('approval'));
+
+    const prodStage = democicdpipeline.addStage(new PipelineAppStage(this, 'prod', {
+      env: { account: '489493636977', region: 'us-west-1' }
+    }));
   }
 }
