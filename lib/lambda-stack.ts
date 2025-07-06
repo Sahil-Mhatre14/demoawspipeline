@@ -6,7 +6,7 @@ export class lambdaStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        const demolambda = new lambda.Function(this, 'lambda14', {
+        const demolambda = new lambda.Function(this, `lambda-${props.stageName}`, {
             functionName: 'lambda14',
             handler: 'index.handler',
             runtime: lambda.Runtime.NODEJS_18_X,
