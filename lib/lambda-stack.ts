@@ -10,7 +10,7 @@ export class lambdaStack extends cdk.Stack {
         super(scope, id, props);
 
         const demolambda = new lambda.Function(this, `lambda-${props.stageName}`, {
-            functionName: 'lambda14',
+            functionName: `lambda14-${props.stageName}`,
             handler: 'index.handler',
             runtime: lambda.Runtime.NODEJS_18_X,
             code: lambda.Code.fromInline('exports.handler = _ => "Hello CDK";')
